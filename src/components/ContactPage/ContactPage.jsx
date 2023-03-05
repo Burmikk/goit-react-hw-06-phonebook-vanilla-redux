@@ -4,28 +4,41 @@ import { nanoid } from 'nanoid';
 import { useState, useEffect } from 'react';
 import Filter from 'components/Filter/Filter';
 import styles from './contactPage.module.scss';
+import { useSelector, useDispatch } from 'react-redux';
+import { addContacts, addFilter, deleteContact } from 'Redux/actions';
+import { store } from 'Redux/store';
 
 const getFromLocalStorage = () => JSON.parse(localStorage.getItem('contacts'));
 
 const ContactPage = () => {
-  const [contacts, setContacts] = useState(getFromLocalStorage());
-  const [filter, setFilter] = useState('');
+  // const [contacts, setContacts] = useState(getFromLocalStorage());
+  // const [filter, setFilter] = useState('');
 
-  useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
+  const contacts = useSelector(store => store.contacts);
+  const filter = useSelector(store => store.filter);
 
-  const addContact = data => {
-    const checkForMatch = contacts.find(
+  const dispatch = useDispatch();
+
+  // useEffect(() => {
+  //   localStorage.setItem('contacts', JSON.stringify(contacts));
+  // }, [contacts]);
+
+  const onAddContact = data => {
+    const isDublicate = contacts.find(
       contact => contact.name.toLowerCase() === data.name.toLowerCase()
     );
-    if (checkForMatch) {
+    if (isDublicate) {
       return alert(`${data.name} is already in contacts`);
     }
-    const newContact = { id: nanoid(2), ...data };
-    setContacts(prevState => {
-      return [...prevState, newContact];
-    });
+
+    const action = addContacts(data);
+    dispatch(action);
+  };
+
+  const onAddFilter = e => {
+    const { value } = e.target;
+    const action = addFilter(value);
+    dispatch(action);
   };
 
   //Функция ниже возвращает либо contacts либо отфильтрованый массив с контактами.
@@ -43,23 +56,17 @@ const ContactPage = () => {
   };
 
   const handleRemove = id => {
-    setContacts(prevState => {
-      const newState = prevState.filter(item => item.id !== id);
-      return newState;
-    });
-  };
-
-  const onFilter = e => {
-    setFilter(e.target.value);
+    const action = deleteContact(id);
+    dispatch(action);
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.wrapper}>
         <h1 className={styles.title}>Phonebook</h1>
-        <ContactForm addContact={addContact} />
+        <ContactForm addContact={onAddContact} />
         <h2 className={styles.title}>Contacts</h2>
-        <Filter filter={onFilter} filterValue={filter} />
+        <Filter filter={onAddFilter} filterValue={filter} />
         {contacts.length !== 0 && (
           <ContactList filterSearch={filterSearch()} remove={handleRemove} />
         )}
@@ -69,3 +76,5 @@ const ContactPage = () => {
 };
 
 export default ContactPage;
+
+// <ContactList filterSearch={filterSearch()} remove={handleRemove} />;

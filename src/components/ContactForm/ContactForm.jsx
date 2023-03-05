@@ -26,6 +26,7 @@ const ContactForm = ({ addContact }) => {
 
   const handleSubmitForm = e => {
     e.preventDefault();
+    focusRef.current.focus();
 
     addContact({ ...state });
 
