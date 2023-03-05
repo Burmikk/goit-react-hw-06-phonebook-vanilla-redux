@@ -1,14 +1,11 @@
 import ContactList from 'components/ContactList/ContactList';
 import ContactForm from 'components/ContactForm/ContactForm';
-import { nanoid } from 'nanoid';
-import { useState, useEffect } from 'react';
 import Filter from 'components/Filter/Filter';
 import styles from './contactPage.module.scss';
 import { useSelector, useDispatch } from 'react-redux';
 import { addContacts, addFilter, deleteContact } from 'Redux/actions';
-import { store } from 'Redux/store';
 
-const getFromLocalStorage = () => JSON.parse(localStorage.getItem('contacts'));
+// const getFromLocalStorage = () => JSON.parse(localStorage.getItem('contacts'));
 
 const ContactPage = () => {
   // const [contacts, setContacts] = useState(getFromLocalStorage());
